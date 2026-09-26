@@ -1,0 +1,16 @@
+bin/
+/preburn
+web/node_modules/
+web/dist/
+web/playwright-report/
+web/test-results/
+web/coverage/
+coverage.out
+*.local
+.env
+.env.*
+!.env.example
+core
+!core/
+core.[0-9]*
+private/

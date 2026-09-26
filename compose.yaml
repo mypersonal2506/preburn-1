@@ -1,0 +1,99 @@
+name: preburn
+
+x-preburn: &preburn
+  image: ghcr.io/preburn/preburn:${PREBURN_VERSION:-latest}
+  environment:
+    PREBURN_DATABASE_URL: postgres://preburn:${POSTGRES_PASSWORD:-preburn}@postgres:5432/preburn?sslmode=disable
+    PREBURN_DATABASE_MAXIMUM_CONNECTIONS:
+    PREBURN_REDIS_URL: redis://valkey:6379
+    PREBURN_REDIS_KEY_PREFIX:
+    PREBURN_SECRET_KEY: ${PREBURN_SECRET_KEY:?create one with docker run --rm ghcr.io/preburn/preburn secret-key and set it in .env}
+    PREBURN_PUBLIC_URL:
+    PREBURN_LOG_LEVEL:
+    PREBURN_TRUSTED_PROXIES:
+    PREBURN_DECISION_RETENTION_DAYS:
+    PREBURN_PRICING_LITELLM_REFRESH:
+    PREBURN_WEBHOOKS_ALLOW_PRIVATE_NETWORKS:
+    OTEL_EXPORTER_OTLP_ENDPOINT:
+    OTEL_EXPORTER_OTLP_PROTOCOL:
+    OTEL_EXPORTER_OTLP_HEADERS:
+
+services:
+  postgres:
+    image: postgres:18.6-alpine
+    environment:
+      POSTGRES_USER: preburn
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-preburn}
+    volumes:
+      - postgres:/var/lib/postgresql
+    healthcheck:
+      # Over TCP, because the first start runs a temporary server that listens on the socket only.
+      test: ["CMD", "pg_isready", "--host=127.0.0.1", "--username=preburn", "--dbname=preburn"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+      start_interval: 1s
+    restart: unless-stopped
+
+  valkey:
+    image: valkey/valkey:9.1.2-alpine
+    command: ["valkey-server", "--appendonly", "yes"]
+    volumes:
+      - valkey:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+      start_interval: 1s
+    restart: unless-stopped
+
+  migrate:
+    <<: *preburn
+    command: ["migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    <<: *preburn
+    command: ["serve"]
+    ports:
+      - "127.0.0.1:${PREBURN_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "/preburn", "healthcheck", "--url", "http://127.0.0.1:8080/readyz"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+      start_interval: 1s
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      valkey:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    <<: *preburn
+    command: ["worker"]
+    healthcheck:
+      test: ["CMD", "/preburn", "healthcheck", "--url", "http://127.0.0.1:9090/metrics"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+      start_interval: 1s
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      valkey:
+        condition: service_healthy
+    restart: unless-stopped
+    stop_grace_period: 60s
+
+volumes:
+  postgres:
+  valkey:

@@ -1,0 +1,50 @@
+curated_models:
+  fal_ai:
+    fal-ai/veo3.1/fast:
+      audio: true
+      resolution: 720p
+    fal-ai/veo3.1/lite:
+      audio: true
+      resolution: 720p
+    fal-ai/kling-video/v2.5-turbo/pro/text-to-video: {}
+    fal-ai/wan/v2.2-a14b/text-to-video:
+      resolution: 720p
+    fal-ai/flux/schnell:
+      size: 1024x768
+    fal-ai/flux/dev:
+      size: 1024x768
+  runwayml:
+    gen4.5:
+      resolution: 720p
+    gen4_turbo:
+      resolution: 720p
+    veo3.1_fast:
+      audio: true
+  deepgram:
+    nova-3: {}
+    streaming/nova-3: {}
+    flux-general-en: {}
+  elevenlabs:
+    eleven_v3: {}
+    eleven_v3_conversational: {}
+    eleven_multilingual_v2: {}
+    eleven_flash_v2_5: {}
+
+litellm_models:
+  anthropic:
+    claude-sonnet-5:
+      service_tier: standard
+    claude-haiku-4-5:
+      service_tier: standard
+  openai:
+    gpt-6-sol:
+      service_tier: standard
+      context_tier: standard
+    gpt-6-luna:
+      service_tier: standard
+      context_tier: standard
+  gemini:
+    gemini-3.8-flash:
+      service_tier: standard
+    gemini-3.1-flash-image:
+      service_tier: standard

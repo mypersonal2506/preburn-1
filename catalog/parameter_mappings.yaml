@@ -1,0 +1,167 @@
+curated_models:
+  fal_ai:
+    fal-ai/veo3.1/fast:
+      duration:
+        provider_parameter: duration
+        value_type: string
+        allowed_values: [4s, 6s, 8s]
+        effect: sets
+        meter: output_seconds
+        quantities: {4s: "4", 6s: "6", 8s: "8"}
+      resolution:
+        provider_parameter: resolution
+        value_type: string
+        allowed_values: [720p, 1080p, 4k]
+        effect: prices
+        meter: output_seconds
+      audio:
+        provider_parameter: generate_audio
+        value_type: boolean
+        effect: prices
+        meter: output_seconds
+    fal-ai/veo3.1/lite:
+      duration:
+        provider_parameter: duration
+        value_type: string
+        allowed_values: [4s, 6s, 8s]
+        effect: sets
+        meter: output_seconds
+        quantities: {4s: "4", 6s: "6", 8s: "8"}
+      resolution:
+        provider_parameter: resolution
+        value_type: string
+        allowed_values: [720p, 1080p]
+        effect: prices
+        meter: output_seconds
+      audio:
+        provider_parameter: generate_audio
+        value_type: boolean
+        effect: prices
+        meter: output_seconds
+    fal-ai/kling-video/v2.5-turbo/pro/text-to-video:
+      duration:
+        provider_parameter: duration
+        value_type: string
+        allowed_values: ["5", "10"]
+        effect: sets
+        meter: output_seconds
+        quantities: {"5": "5", "10": "10"}
+    fal-ai/wan/v2.2-a14b/text-to-video:
+      resolution:
+        provider_parameter: resolution
+        value_type: string
+        allowed_values: [480p, 720p]
+        effect: prices
+        meter: output_seconds
+    fal-ai/flux/schnell:
+      image_size:
+        provider_parameter: image_size
+        value_type: string
+        allowed_values: [square_hd, square, portrait_4_3, portrait_16_9, landscape_4_3, landscape_16_9]
+        effect: sets
+        meter: megapixels
+        quantities:
+          square_hd: "1"
+          square: "0.25"
+          portrait_4_3: "0.75"
+          portrait_16_9: "0.5625"
+          landscape_4_3: "0.75"
+          landscape_16_9: "0.5625"
+    fal-ai/flux/dev:
+      image_size:
+        provider_parameter: image_size
+        value_type: string
+        allowed_values: [square_hd, square, portrait_4_3, portrait_16_9, landscape_4_3, landscape_16_9]
+        effect: sets
+        meter: megapixels
+        quantities:
+          square_hd: "1"
+          square: "0.25"
+          portrait_4_3: "0.75"
+          portrait_16_9: "0.5625"
+          landscape_4_3: "0.75"
+          landscape_16_9: "0.5625"
+  runwayml:
+    gen4.5:
+      duration:
+        provider_parameter: duration
+        value_type: integer
+        minimum: 2
+        maximum: 10
+        effect: sets
+        meter: output_seconds
+    gen4_turbo:
+      duration:
+        provider_parameter: duration
+        value_type: integer
+        minimum: 2
+        maximum: 10
+        effect: sets
+        meter: output_seconds
+    veo3.1_fast:
+      duration:
+        provider_parameter: duration
+        value_type: integer
+        allowed_values: [4, 6, 8]
+        effect: sets
+        meter: output_seconds
+      audio:
+        provider_parameter: audio
+        value_type: boolean
+        effect: prices
+        meter: output_seconds
+  deepgram:
+    nova-3: {}
+    streaming/nova-3: {}
+    flux-general-en: {}
+  elevenlabs:
+    eleven_v3: {}
+    eleven_v3_conversational: {}
+    eleven_multilingual_v2: {}
+    eleven_flash_v2_5: {}
+
+litellm_models:
+  anthropic:
+    claude-sonnet-5:
+      max_tokens:
+        provider_parameter: max_tokens
+        value_type: integer
+        minimum: 1
+        maximum: 128000
+        effect: bounds
+        meter: output_tokens
+    claude-haiku-4-5:
+      max_tokens:
+        provider_parameter: max_tokens
+        value_type: integer
+        minimum: 1
+        maximum: 64000
+        effect: bounds
+        meter: output_tokens
+  openai:
+    gpt-6-sol:
+      max_tokens:
+        provider_parameter: max_completion_tokens
+        value_type: integer
+        minimum: 1
+        maximum: 128000
+        effect: bounds
+        meter: output_tokens
+    gpt-6-luna:
+      max_tokens:
+        provider_parameter: max_completion_tokens
+        value_type: integer
+        minimum: 1
+        maximum: 128000
+        effect: bounds
+        meter: output_tokens
+  gemini:
+    gemini-3.8-flash:
+      max_tokens:
+        provider_parameter: maxOutputTokens
+        value_type: integer
+        minimum: 1
+        maximum: 65536
+        effect: bounds
+        meter: output_tokens
+    gemini-3.1-flash-image: {}

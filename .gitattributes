@@ -1,0 +1,6 @@
+* text=auto eol=lf
+
+internal/*/queries/** linguist-generated=true
+web/src/client/** linguist-generated=true
+web/src/routeTree.gen.ts linguist-generated=true
+api/openapi.json linguist-generated=true

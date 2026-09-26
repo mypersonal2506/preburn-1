@@ -1,0 +1,10 @@
+litellm_models:
+  anthropic:
+    claude-sonnet-5: Claude Sonnet 5
+    claude-haiku-4-5: Claude Haiku 4.5
+  openai:
+    gpt-6-sol: GPT-6 Sol
+    gpt-6-luna: GPT-6 Luna
+  gemini:
+    gemini-3.8-flash: Gemini 3.8 Flash
+    gemini-3.1-flash-image: Gemini 3.1 Flash Image

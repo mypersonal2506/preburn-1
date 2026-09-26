@@ -1,0 +1,4 @@
+repository: https://github.com/BerriAI/litellm
+file: model_prices_and_context_window.json
+commit: 90873c46de441a80e65203447eba6a241dcf7106
+fetched_on: 2026-09-26

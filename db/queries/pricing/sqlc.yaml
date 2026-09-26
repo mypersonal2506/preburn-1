@@ -1,0 +1,69 @@
+version: "2"
+sql:
+  - engine: postgresql
+    schema: ../../migrations
+    queries: .
+    gen:
+      go:
+        package: queries
+        out: ../../../internal/pricing/queries
+        sql_package: pgx/v5
+        omit_unused_structs: true
+        emit_pointers_for_null_types: true
+        initialisms:
+          - id
+          - url
+        overrides:
+          - db_type: uuid
+            go_type: github.com/google/uuid.UUID
+          - db_type: uuid
+            nullable: true
+            go_type:
+              import: github.com/google/uuid
+              type: UUID
+              pointer: true
+          - db_type: timestamptz
+            go_type: time.Time
+          - db_type: timestamptz
+            nullable: true
+            go_type:
+              type: time.Time
+              pointer: true
+          - column: pricing_rules.unit_price_nanos
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+          - column: pricing_rules.minimum_charge_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true
+          - column: pricing_rules.billing_increment_micros
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Quantity
+              pointer: true
+          - column: pricing_overrides.unit_price_nanos
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+          - column: pricing_overrides.native_unit_price_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true
+          - column: pricing_overrides.minimum_charge_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true
+          - column: pricing_overrides.billing_increment_micros
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Quantity
+              pointer: true

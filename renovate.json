@@ -1,0 +1,156 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices", ":semanticCommits", ":gitSignOff", "schedule:weekly"],
+  "automerge": false,
+  "postUpdateOptions": ["gomodTidy"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["_IMAGE=(?<depName>[^\\s:@]+):(?<currentValue>[^\\s@]+)(?:@(?<currentDigest>sha256:[a-f0-9]{64}))?"],
+      "datasourceTemplate": "docker",
+      "autoReplaceStringTemplate": "_IMAGE={{{depName}}}:{{{newValue}}}{{#if newDigest}}@{{{newDigest}}}{{/if}}"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)GO_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "go",
+      "datasourceTemplate": "golang-version"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)NODE_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "node",
+      "datasourceTemplate": "node-version"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)PNPM_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "pnpm",
+      "datasourceTemplate": "npm"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)SQLC_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "sqlc",
+      "packageNameTemplate": "sqlc-dev/sqlc",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)GOLANGCI_LINT_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "golangci-lint",
+      "packageNameTemplate": "golangci/golangci-lint",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)GITLEAKS_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "gitleaks",
+      "packageNameTemplate": "gitleaks/gitleaks",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)ACTIONLINT_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "actionlint",
+      "packageNameTemplate": "rhysd/actionlint",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)GOIMPORTS_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "goimports",
+      "packageNameTemplate": "golang.org/x/tools",
+      "datasourceTemplate": "go",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^versions\\.env$/"],
+      "matchStrings": ["(?:^|\\n)GO_LICENSES_VERSION=(?<currentValue>\\S+)"],
+      "depNameTemplate": "go-licenses",
+      "packageNameTemplate": "github.com/google/go-licenses/v2",
+      "datasourceTemplate": "go",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^README\\.md$/"],
+      "matchStrings": ["preburn/sdk-python(?:@|/)(?<currentValue>v\\d+\\.\\d+\\.\\d+)"],
+      "depNameTemplate": "preburn/sdk-python",
+      "datasourceTemplate": "github-tags"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["gomod"],
+      "groupName": "Go modules"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchDepTypes": ["!packageManager"],
+      "groupName": "npm packages"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "scripts/check-image-tags.sh fails unless compose.yaml and versions.env hold equal Postgres and Valkey images",
+      "matchDatasources": ["docker"],
+      "groupName": "Docker images"
+    },
+    {
+      "matchFileNames": ["versions.env"],
+      "matchDatasources": ["!docker"],
+      "groupName": "tool versions"
+    },
+    {
+      "description": "The packageManager field of web/package.json holds the pnpm version of versions.env",
+      "matchDepTypes": ["packageManager"],
+      "groupName": "tool versions"
+    },
+    {
+      "matchFileNames": ["versions.env"],
+      "matchDepNames": ["node", "sqlc", "golangci-lint", "gitleaks", "actionlint"],
+      "prBodyNotes": [
+        "Renovate changes the version only. Replace the tool's `_SHA256_AMD64` and `_SHA256_ARM64` values in `versions.env` as `docs/releasing.md` describes. The tools image build fails until they match."
+      ]
+    },
+    {
+      "description": "The Go version and the golang image in versions.env change together",
+      "matchPackageNames": ["go", "golang"],
+      "groupName": "Go"
+    },
+    {
+      "description": "The Node.js version and the node image in versions.env change together",
+      "matchPackageNames": ["node"],
+      "groupName": "Node.js"
+    },
+    {
+      "description": "The gitleaks binary of the tools image and the gitleaks image of CI change together",
+      "matchPackageNames": ["gitleaks/gitleaks", "ghcr.io/gitleaks/gitleaks"],
+      "groupName": "gitleaks"
+    },
+    {
+      "description": "A new Postgres major version needs a data upgrade of existing installations",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["postgres"],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+aliases:
+  fal_ai:
+    fal-ai/veo3.1/fast/image-to-video: fal-ai/veo3.1/fast
+    fal-ai/veo3.1/lite/image-to-video: fal-ai/veo3.1/lite
+    fal-ai/kling-video/v2.5-turbo/pro/image-to-video: fal-ai/kling-video/v2.5-turbo/pro/text-to-video
+  elevenlabs:
+    eleven_turbo_v2_5: eleven_flash_v2_5

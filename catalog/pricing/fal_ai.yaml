@@ -1,0 +1,94 @@
+models:
+  - model: fal-ai/veo3.1/fast
+    display_name: Veo 3.1 Fast
+    source_url: https://fal.ai/models/fal-ai/veo3.1/fast
+    verified_on: 2026-09-26
+    rules:
+      - meter: output_seconds
+        unit_price: "0.15"
+        unit_quantity: 1
+      - meter: output_seconds
+        conditions:
+          audio: false
+        unit_price: "0.10"
+        unit_quantity: 1
+      - meter: output_seconds
+        conditions:
+          resolution: 4k
+        unit_price: "0.35"
+        unit_quantity: 1
+      - meter: output_seconds
+        conditions:
+          audio: false
+          resolution: 4k
+        unit_price: "0.30"
+        unit_quantity: 1
+
+  - model: fal-ai/veo3.1/lite
+    display_name: Veo 3.1 Lite
+    source_url: https://fal.ai/models/fal-ai/veo3.1/lite
+    verified_on: 2026-09-26
+    rules:
+      - meter: output_seconds
+        unit_price: "0.05"
+        unit_quantity: 1
+      - meter: output_seconds
+        conditions:
+          audio: false
+        unit_price: "0.03"
+        unit_quantity: 1
+      - meter: output_seconds
+        conditions:
+          resolution: 1080p
+        unit_price: "0.08"
+        unit_quantity: 1
+      - meter: output_seconds
+        conditions:
+          audio: false
+          resolution: 1080p
+        unit_price: "0.05"
+        unit_quantity: 1
+
+  - model: fal-ai/kling-video/v2.5-turbo/pro/text-to-video
+    display_name: Kling 2.5 Turbo Pro
+    source_url: https://fal.ai/models/fal-ai/kling-video/v2.5-turbo/pro/text-to-video
+    verified_on: 2026-09-26
+    rules:
+      - meter: output_seconds
+        unit_price: "0.07"
+        unit_quantity: 1
+        minimum_charge: "0.35"
+
+  - model: fal-ai/wan/v2.2-a14b/text-to-video
+    display_name: Wan 2.2 A14B
+    source_url: https://fal.ai/models/fal-ai/wan/v2.2-a14b/text-to-video
+    verified_on: 2026-09-26
+    rules:
+      - meter: output_seconds
+        unit_price: "0.08"
+        unit_quantity: 1
+      - meter: output_seconds
+        conditions:
+          resolution: 480p
+        unit_price: "0.04"
+        unit_quantity: 1
+
+  - model: fal-ai/flux/schnell
+    display_name: FLUX.1 [schnell]
+    source_url: https://fal.ai/models/fal-ai/flux/schnell
+    verified_on: 2026-09-26
+    rules:
+      - meter: megapixels
+        unit_price: "0.003"
+        unit_quantity: 1
+        billing_increment: "1"
+
+  - model: fal-ai/flux/dev
+    display_name: FLUX.1 [dev]
+    source_url: https://fal.ai/models/fal-ai/flux/dev
+    verified_on: 2026-09-26
+    rules:
+      - meter: megapixels
+        unit_price: "0.025"
+        unit_quantity: 1
+        billing_increment: "1"

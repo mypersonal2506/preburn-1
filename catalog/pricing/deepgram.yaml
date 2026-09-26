@@ -1,0 +1,27 @@
+models:
+  - model: nova-3
+    display_name: Nova-3
+    source_url: https://deepgram.com/pricing
+    verified_on: 2026-09-26
+    rules:
+      - meter: audio_minutes
+        unit_price: "0.0043"
+        unit_quantity: 1
+
+  - model: streaming/nova-3
+    display_name: Nova-3 Streaming
+    source_url: https://deepgram.com/pricing
+    verified_on: 2026-09-26
+    rules:
+      - meter: audio_minutes
+        unit_price: "0.0048"
+        unit_quantity: 1
+
+  - model: flux-general-en
+    display_name: Flux English
+    source_url: https://deepgram.com/pricing
+    verified_on: 2026-09-26
+    rules:
+      - meter: audio_minutes
+        unit_price: "0.0065"
+        unit_quantity: 1

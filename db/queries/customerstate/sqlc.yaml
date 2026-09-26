@@ -1,0 +1,46 @@
+version: "2"
+sql:
+  - engine: postgresql
+    schema: ../../migrations
+    queries: .
+    gen:
+      go:
+        package: queries
+        out: ../../../internal/customerstate/queries
+        sql_package: pgx/v5
+        omit_unused_structs: true
+        emit_pointers_for_null_types: true
+        initialisms:
+          - id
+        overrides:
+          - db_type: uuid
+            go_type: github.com/google/uuid.UUID
+          - db_type: uuid
+            nullable: true
+            go_type:
+              import: github.com/google/uuid
+              type: UUID
+              pointer: true
+          - db_type: timestamptz
+            go_type: time.Time
+          - db_type: timestamptz
+            nullable: true
+            go_type:
+              type: time.Time
+              pointer: true
+          - column: plans.target_margin_basis_points
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: BasisPoints
+              pointer: true
+          - column: plans.allowance_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true
+          - column: period_rollups.revenue_net_nanos
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount

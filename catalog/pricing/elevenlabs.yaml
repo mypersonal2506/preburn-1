@@ -1,0 +1,36 @@
+models:
+  - model: eleven_v3
+    display_name: Eleven v3
+    source_url: https://elevenlabs.io/pricing/api
+    verified_on: 2026-09-26
+    rules:
+      - meter: characters
+        unit_price: "0.10"
+        unit_quantity: 1000
+
+  - model: eleven_v3_conversational
+    display_name: Eleven v3 Conversational
+    source_url: https://elevenlabs.io/pricing/api
+    verified_on: 2026-09-26
+    rules:
+      - meter: characters
+        unit_price: "0.05"
+        unit_quantity: 1000
+
+  - model: eleven_multilingual_v2
+    display_name: Eleven Multilingual v2
+    source_url: https://elevenlabs.io/pricing/api
+    verified_on: 2026-09-26
+    rules:
+      - meter: characters
+        unit_price: "0.10"
+        unit_quantity: 1000
+
+  - model: eleven_flash_v2_5
+    display_name: Eleven Flash v2.5
+    source_url: https://elevenlabs.io/pricing/api
+    verified_on: 2026-09-26
+    rules:
+      - meter: characters
+        unit_price: "0.05"
+        unit_quantity: 1000

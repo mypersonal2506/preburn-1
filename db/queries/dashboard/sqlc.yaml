@@ -1,0 +1,74 @@
+version: "2"
+sql:
+  - engine: postgresql
+    schema: ../../migrations
+    queries: .
+    gen:
+      go:
+        package: queries
+        out: ../../../internal/dashboard/queries
+        sql_package: pgx/v5
+        omit_unused_structs: true
+        emit_pointers_for_null_types: true
+        initialisms:
+          - id
+        overrides:
+          - db_type: uuid
+            go_type: github.com/google/uuid.UUID
+          - db_type: uuid
+            nullable: true
+            go_type:
+              import: github.com/google/uuid
+              type: UUID
+              pointer: true
+          - db_type: timestamptz
+            go_type: time.Time
+          - db_type: timestamptz
+            nullable: true
+            go_type:
+              type: time.Time
+              pointer: true
+          - column: plans.target_margin_basis_points
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: BasisPoints
+          - column: plans.allowance_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true
+          - column: period_rollups.revenue_net_nanos
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+          - column: period_rollups.cost_nanos
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+          - column: revenue_entries.amount_nanos
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+          - column: decisions.requested_estimated_cost_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true
+          - column: decisions.estimated_cost_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true
+          - column: decisions.reserved_nanos
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+          - column: ledger_entries.cost_nanos
+            nullable: true
+            go_type:
+              import: github.com/preburn/preburn/internal/money
+              type: Amount
+              pointer: true

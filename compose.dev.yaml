@@ -1,0 +1,190 @@
+name: preburn-dev
+
+# go run exits on SIGTERM without passing the signal to the program, so the
+# entrypoint builds the binary and execs it to keep graceful shutdown.
+x-go-build: &go-build
+  context: .
+  additional_contexts:
+    tools: service:tools
+  dockerfile_inline: |
+    FROM tools
+    COPY --chown=preburn:preburn go.mod go.sum ./
+    COPY --chown=preburn:preburn catalog catalog
+    COPY --chown=preburn:preburn cmd cmd
+    COPY --chown=preburn:preburn db db
+    COPY --chown=preburn:preburn internal internal
+    COPY --chown=preburn:preburn web/*.go web/
+    ENTRYPOINT ["sh", "-c", "go build -o /tmp/preburn ./cmd/preburn && exec /tmp/preburn \"$$@\"", "preburn"]
+
+x-go-environment: &go-environment
+  PREBURN_DATABASE_URL: postgres://preburn:preburn@postgres:5432/preburn?sslmode=disable
+  PREBURN_REDIS_URL: redis://valkey:6379
+  PREBURN_SECRET_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+  PREBURN_PUBLIC_URL: http://localhost:5180
+  PREBURN_HTTP_ADDRESS: ":8480"
+  PREBURN_WEBHOOKS_ALLOW_PRIVATE_NETWORKS: "true"
+  PREBURN_STRIPE_API_BASE: http://stripe-mock:12111
+
+x-go-volumes: &go-volumes
+  - dev-go-module-cache:/go/pkg/mod
+  - dev-go-build-cache:/home/preburn/.cache/go-build
+
+x-go-develop: &go-develop
+  watch:
+    - path: cmd
+      target: /workspace/cmd
+      action: sync+restart
+      ignore: ["**/*_test.go"]
+    - path: internal
+      target: /workspace/internal
+      action: sync+restart
+      ignore: ["**/*_test.go"]
+    - path: catalog
+      target: /workspace/catalog
+      action: sync+restart
+      ignore: ["**/*_test.go"]
+    - path: db
+      target: /workspace/db
+      action: sync+restart
+      ignore: ["**/*_test.go"]
+    - path: go.mod
+      action: rebuild
+    - path: go.sum
+      action: rebuild
+
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:?}
+    environment:
+      POSTGRES_USER: preburn
+      POSTGRES_PASSWORD: preburn
+    ports:
+      - "127.0.0.1:25432:5432"
+    volumes:
+      - dev-postgres:/var/lib/postgresql
+    healthcheck:
+      # Over TCP, because the first start runs a temporary server that listens on the socket only.
+      test: ["CMD", "pg_isready", "--host=127.0.0.1", "--username=preburn", "--dbname=preburn"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  valkey:
+    image: ${VALKEY_IMAGE:?}
+    command: ["valkey-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:26379:6379"
+    volumes:
+      - dev-valkey:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  stripe-mock:
+    image: ${STRIPE_MOCK_IMAGE:?}
+    ports:
+      - "127.0.0.1:22111:12111"
+
+  tools:
+    image: preburn-tools:local
+    build:
+      context: docker
+      dockerfile: tools.Dockerfile
+      args:
+        GO_VERSION: ${GO_VERSION:?}
+        NODE_VERSION: ${NODE_VERSION:?}
+        NODE_SHA256_AMD64: ${NODE_SHA256_AMD64:?}
+        NODE_SHA256_ARM64: ${NODE_SHA256_ARM64:?}
+        PNPM_VERSION: ${PNPM_VERSION:?}
+        SQLC_VERSION: ${SQLC_VERSION:?}
+        SQLC_SHA256_AMD64: ${SQLC_SHA256_AMD64:?}
+        SQLC_SHA256_ARM64: ${SQLC_SHA256_ARM64:?}
+        GOLANGCI_LINT_VERSION: ${GOLANGCI_LINT_VERSION:?}
+        GOLANGCI_LINT_SHA256_AMD64: ${GOLANGCI_LINT_SHA256_AMD64:?}
+        GOLANGCI_LINT_SHA256_ARM64: ${GOLANGCI_LINT_SHA256_ARM64:?}
+        GITLEAKS_VERSION: ${GITLEAKS_VERSION:?}
+        GITLEAKS_SHA256_AMD64: ${GITLEAKS_SHA256_AMD64:?}
+        GITLEAKS_SHA256_ARM64: ${GITLEAKS_SHA256_ARM64:?}
+        ACTIONLINT_VERSION: ${ACTIONLINT_VERSION:?}
+        ACTIONLINT_SHA256_AMD64: ${ACTIONLINT_SHA256_AMD64:?}
+        ACTIONLINT_SHA256_ARM64: ${ACTIONLINT_SHA256_ARM64:?}
+        GOIMPORTS_VERSION: ${GOIMPORTS_VERSION:?}
+        USER_ID:
+        GROUP_ID:
+    scale: 0
+
+  migrate:
+    build: *go-build
+    init: true
+    command: ["migrate"]
+    environment: *go-environment
+    volumes: *go-volumes
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build: *go-build
+    init: true
+    command: ["serve"]
+    environment: *go-environment
+    volumes: *go-volumes
+    ports:
+      - "127.0.0.1:8480:8480"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      valkey:
+        condition: service_healthy
+    develop: *go-develop
+
+  worker:
+    build: *go-build
+    init: true
+    command: ["worker"]
+    environment: *go-environment
+    volumes: *go-volumes
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      valkey:
+        condition: service_healthy
+    develop: *go-develop
+
+  web:
+    build:
+      context: .
+      additional_contexts:
+        tools: service:tools
+      dockerfile_inline: |
+        FROM tools
+        WORKDIR /workspace/web
+        COPY --chown=preburn:preburn web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml web/.pnpmfile.mjs ./
+        RUN pnpm install --frozen-lockfile
+        COPY --chown=preburn:preburn web/index.html web/tsconfig.json web/tsr.config.json web/vite.config.ts ./
+        COPY --chown=preburn:preburn web/src src
+        CMD ["pnpm", "dev"]
+    init: true
+    environment:
+      PREBURN_DEV_API_URL: http://api:8480
+    ports:
+      - "127.0.0.1:5180:5180"
+    depends_on:
+      - api
+    develop:
+      watch:
+        - path: web/src
+          target: /workspace/web/src
+          action: sync
+        - path: web/package.json
+          action: rebuild
+        - path: web/pnpm-lock.yaml
+          action: rebuild
+
+volumes:
+  dev-postgres:
+  dev-valkey:
+  dev-go-module-cache:
+  dev-go-build-cache:

@@ -1,0 +1,6 @@
+{
+  "routesDirectory": "./src/routes",
+  "generatedRouteTree": "./src/routeTree.gen.ts",
+  "routeFileIgnorePattern": "\\.test\\.tsx?$",
+  "tmpDir": "node_modules/.tanstack/tmp"
+}
