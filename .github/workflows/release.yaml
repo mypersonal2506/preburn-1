@@ -65,6 +65,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: docker login ghcr.io --username "${GITHUB_ACTOR}" --password-stdin <<< "${GITHUB_TOKEN}"
       - name: Build and push the image for amd64 and arm64
+        id: build
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           # The default Git context builds github.sha, which is not always the tag's commit.
@@ -82,7 +83,17 @@ jobs:
             VERSION=${{ steps.release.outputs.version }}
             COMMIT=${{ steps.release.outputs.commit }}
             BUILD_DATE=${{ steps.release.outputs.build-date }}
-      - name: Attach the OpenAPI document to the release
+      - name: Attach the OpenAPI document of the pushed image to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${RELEASE_TAG}" api/openapi.json --clobber --repo "${GITHUB_REPOSITORY}"
+          IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          openapi_path="${RUNNER_TEMP}/openapi.json"
+          docker run --rm "${IMAGE}@${IMAGE_DIGEST}" openapi > "${openapi_path}"
+          document_version="$(jq --raw-output .info.version "${openapi_path}")"
+          if [[ "${document_version}" != "${RELEASE_VERSION}" ]]; then
+            echo "openapi document version differs document_version=${document_version} release_version=${RELEASE_VERSION}" >&2
+            exit 1
+          fi
+          gh release upload "${RELEASE_TAG}" "${openapi_path}" --clobber --repo "${GITHUB_REPOSITORY}"

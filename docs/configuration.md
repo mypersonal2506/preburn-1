@@ -45,7 +45,7 @@ Incoming requests with a `traceparent` header join the caller's trace.
 
 | Variable | Default | Meaning |
 |---|---|---|
-| `PREBURN_VERSION` | `latest` | Image tag of `ghcr.io/preburn/preburn`. Pin a release, such as `0.1.0`, to upgrade on your own schedule. |
+| `PREBURN_VERSION` | the release of `compose.yaml` | Image tag of `ghcr.io/preburn/preburn`. `compose.yaml` and `.env.example` of each release set it to that release, such as `0.1.0`. Set a newer one to upgrade, as [Upgrades](self-hosting.md#upgrades) describes. |
 | `PREBURN_PORT` | `8080` | Port on `127.0.0.1` that serves the dashboard and the API. |
 | `POSTGRES_PASSWORD` | `preburn` | Password of the bundled Postgres. It takes effect only when the Postgres volume is created, so set it before the first start. Use letters and digits, because it goes into the database URL unescaped. |
 

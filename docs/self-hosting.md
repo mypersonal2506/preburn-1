@@ -12,7 +12,7 @@ This page covers running Preburn with the `compose.yaml` of the [quickstart](../
 | `api` | `ghcr.io/preburn/preburn` | Runs `preburn serve`: the API and the dashboard on `127.0.0.1:${PREBURN_PORT}`. |
 | `worker` | `ghcr.io/preburn/preburn` | Runs `preburn worker`: expiry, counter repair, rollups, usage estimates, retention and cleanup jobs. |
 
-`api` and `worker` start after `migrate` succeeds and restart unless stopped. Their Compose healthchecks call `/readyz` on the api and the metrics listener on the worker. The Compose project is named `preburn`, so the volumes are `preburn_postgres` and `preburn_valkey`.
+`api` and `worker` start after `migrate` succeeds and restart unless stopped. Their Compose healthchecks call `/readyz` on the api and the metrics listener on the worker. The Compose project is named `preburn`, so the volumes are `preburn_postgres` and `preburn_valkey`. The name does not follow the folder, so to run a second installation on the same machine, pass `-p <name>` to every `docker compose` command in its folder and set another `PREBURN_PORT` in its `.env`.
 
 `docker compose down` stops Preburn and keeps its data. `docker compose down -v` also deletes the volumes and every record in them.
 

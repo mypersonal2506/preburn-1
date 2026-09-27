@@ -59,11 +59,14 @@ curl -fsSL -o .env https://raw.githubusercontent.com/preburn/preburn/v0.1.0/.env
 
 ### 2. Create the secret key
 
+<!-- x-release-please-start-version -->
 ```sh
-echo "PREBURN_SECRET_KEY=$(docker run --rm ghcr.io/preburn/preburn secret-key)" >> .env
+sed -i.bak "s|^PREBURN_SECRET_KEY=$|PREBURN_SECRET_KEY=$(docker run --rm ghcr.io/preburn/preburn:0.1.0 secret-key)|" .env
+rm .env.bak
 ```
+<!-- x-release-please-end -->
 
-Keep a copy of this key with your backups. See [Secret key](docs/self-hosting.md#secret-key).
+The command writes a new key into the empty `PREBURN_SECRET_KEY=` line of `.env`. Keep a copy of this key with your backups. See [Secret key](docs/self-hosting.md#secret-key).
 
 ### 3. Start Preburn
 
@@ -157,7 +160,7 @@ Preburn reads its settings from environment variables, which Compose takes from 
 
 ## Upgrading
 
-Preburn is at 0.x, so a minor release can change the API and the configuration. Read the [changelog](CHANGELOG.md) before you upgrade, and take a backup. Then pin the new version in `.env` and restart:
+Preburn is at 0.x, so a minor release can change the API and the configuration. Read the [changelog](CHANGELOG.md) before you upgrade, and take a backup. Then set `PREBURN_VERSION` in `.env` to the new version and restart:
 
 ```sh
 docker compose pull

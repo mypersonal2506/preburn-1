@@ -4,7 +4,7 @@
   "include-component-in-tag": false,
   "initial-version": "0.1.0",
   "bump-minor-pre-major": true,
-  "extra-files": ["README.md"],
+  "extra-files": ["README.md", "compose.yaml", ".env.example"],
   "signoff": "github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>",
   "packages": {
     ".": {}
