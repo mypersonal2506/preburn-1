@@ -15,6 +15,7 @@ import type { MemberResponse } from "@/client";
 import { AppSidebarAccountMenu } from "@/components/app-sidebar-account-menu";
 import { AppSidebarEnvironmentSwitch } from "@/components/app-sidebar-environment-switch";
 import { AppSidebarInstallationName } from "@/components/app-sidebar-installation-name";
+import { PreburnMark } from "@/components/preburn-mark";
 import {
 	Sidebar,
 	SidebarContent,
@@ -64,11 +65,12 @@ const NAVIGATION_GROUPS = [
 const SETTINGS_SECTION = "/settings";
 
 /**
- * The app shell sidebar, collapsible to icons. The top holds the wordmark,
- * the installation name and the environment switch. The body lists the
- * navigation groups of the shipped screens only, and the foot holds Settings
- * and the account menu. The item of the current section is marked active.
- * At phone width the sidebar is a sheet, which closes once a page opens.
+ * The app shell sidebar, collapsible to icons. The top holds the mark and
+ * wordmark, the installation name and the environment switch, and keeps only
+ * the mark while collapsed. The body lists the navigation groups of the
+ * shipped screens only, and the foot holds Settings and the account menu.
+ * The item of the current section is marked active. At phone width the
+ * sidebar is a sheet, which closes once a page opens.
  */
 export function AppSidebar({ member }: AppSidebarProps) {
 	const pathname = useLocation({ select: (location) => location.pathname });
@@ -83,9 +85,16 @@ export function AppSidebar({ member }: AppSidebarProps) {
 	return (
 		<Sidebar collapsible="icon">
 			<SidebarHeader>
-				<div className="flex flex-col gap-0.5 px-2 pt-1 group-data-[collapsible=icon]:hidden">
-					<span className="text-sm font-semibold tracking-tight">Preburn</span>
-					<AppSidebarInstallationName />
+				<div className="flex flex-col gap-0.5 px-2 pt-1">
+					<div className="flex items-center gap-2">
+						<PreburnMark className="size-5" />
+						<span className="text-sm font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+							Preburn
+						</span>
+					</div>
+					<div className="pl-7 group-data-[collapsible=icon]:hidden">
+						<AppSidebarInstallationName />
+					</div>
 				</div>
 				<AppSidebarEnvironmentSwitch />
 			</SidebarHeader>

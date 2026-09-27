@@ -107,6 +107,17 @@ test("the top shows the installation name", async () => {
 	).toBeInTheDocument();
 });
 
+test("the top shows the hidden mark before the wordmark", async () => {
+	stubApi(signedInAnswers);
+	renderApp("/");
+
+	const sidebar = await findSidebar();
+
+	const mark = within(sidebar).getByText("Preburn").previousElementSibling;
+	expect(mark).toHaveAttribute("data-slot", "preburn-mark");
+	expect(mark).toHaveAttribute("aria-hidden", "true");
+});
+
 test("the default installation name is not shown twice", async () => {
 	stubApi({
 		...signedInAnswers,

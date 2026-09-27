@@ -16,6 +16,7 @@ WORKDIR /web
 COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml web/.pnpmfile.mjs \
      web/index.html web/tsconfig.json web/tsr.config.json web/vite.config.ts ./
 COPY web/src src
+COPY web/public public
 
 RUN --mount=type=cache,target=/pnpm/store \
     --mount=type=tmpfs,target=/web/node_modules \

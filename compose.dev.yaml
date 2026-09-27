@@ -165,6 +165,7 @@ services:
         RUN pnpm install --frozen-lockfile
         COPY --chown=preburn:preburn web/index.html web/tsconfig.json web/tsr.config.json web/vite.config.ts ./
         COPY --chown=preburn:preburn web/src src
+        COPY --chown=preburn:preburn web/public public
         CMD ["pnpm", "dev"]
     init: true
     environment:
@@ -177,6 +178,9 @@ services:
       watch:
         - path: web/src
           target: /workspace/web/src
+          action: sync
+        - path: web/public
+          target: /workspace/web/public
           action: sync
         - path: web/package.json
           action: rebuild

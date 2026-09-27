@@ -35,7 +35,7 @@ You need Docker and make. Go, Node, pnpm, sqlc, golangci-lint and the other tool
 | `stripe-mock` | `localhost:22111` | For the Stripe connector of a later release. |
 
 - Go changes under `cmd`, `internal`, `catalog` and `db` are copied into the api and worker containers, which rebuild the binary and restart, about 9 seconds after a save. Changes to `go.mod` or `go.sum` rebuild the images.
-- Changes under `web/src` reach the browser through hot reload within a second. Changes to `web/package.json` or the lockfile rebuild the `web` image.
+- Changes under `web/src` reach the browser through hot reload within a second, and changes under `web/public`, such as the icons, are copied into the `web` container too. Changes to `web/package.json` or the lockfile rebuild the `web` image.
 - `migrate` runs only when the stack starts. After adding a migration or changing a catalog file, stop `make dev` and start it again, or rerun migrate in another terminal:
 
   ```sh

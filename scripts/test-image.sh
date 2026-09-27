@@ -7,6 +7,7 @@ readiness_timeout_seconds=60
 forbidden_path_pattern='private|node_modules|_test\.go|(^|/)\.env|(^|/)\.git'
 notices_directory="/usr/share/doc/preburn"
 immutable_cache_control="cache-control: public, max-age=31536000, immutable"
+public_files=("favicon.svg" "manifest.webmanifest")
 run_name="preburn-image-test-$$"
 database_url="postgres://preburn:preburn@postgres:5432/preburn?sslmode=disable"
 redis_url="redis://valkey:6379"
@@ -150,6 +151,18 @@ elif entry_headers="$(curl --fail --silent --show-error --output /dev/null --dum
 else
   fail dashboard "entry_script=${entry_script} not served with the immutable cache header"
 fi
+
+for public_file in "${public_files[@]}"; do
+  public_url="http://${api_address}/${public_file}"
+  public_status="$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' "${public_url}")"
+  if [[ "${public_status}" != 200 ]]; then
+    fail public_file "path=/${public_file} status=${public_status}"
+  elif ! cmp --silent <(curl --fail --silent --show-error "${public_url}") "web/public/${public_file}"; then
+    fail public_file "path=/${public_file} status=${public_status} matches_source=false"
+  else
+    pass public_file "path=/${public_file} status=${public_status} matches_source=true"
+  fi
+done
 
 if ((failures > 0)); then
   echo "image checks failed failures=${failures}" >&2

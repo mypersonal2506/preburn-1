@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.svg">
+    <img alt="Preburn logo" src="docs/images/logo-light.svg" width="72" height="72">
+  </picture>
+</p>
+
 # Preburn
 
 Preburn is an open-source, self-hosted service that decides, before each AI call, whether to allow, route, cap or deny it, based on the contribution margin of the end customer who triggered the call. Your app asks Preburn before each metered AI call and reports the usage afterwards. Margin per customer is the revenue you record through the revenue API minus the AI cost that Preburn prices from the reported usage. Preburn never proxies provider traffic and never receives prompts or outputs.
