@@ -1,7 +1,7 @@
 name: preburn
 
 x-preburn: &preburn
-  image: ghcr.io/preburn/preburn:${PREBURN_VERSION:-0.1.0} # x-release-please-version
+  image: ghcr.io/preburn/preburn:${PREBURN_VERSION:-0.1.1} # x-release-please-version
   environment:
     PREBURN_DATABASE_URL: postgres://preburn:${POSTGRES_PASSWORD:-preburn}@postgres:5432/preburn?sslmode=disable
     PREBURN_DATABASE_MAXIMUM_CONNECTIONS:

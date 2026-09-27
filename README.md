@@ -50,8 +50,8 @@ You need Docker Engine 25 or later with Docker Compose, curl and jq, and Python 
 <!-- x-release-please-start-version -->
 ```sh
 mkdir preburn && cd preburn
-curl -fsSLO https://raw.githubusercontent.com/preburn/preburn/v0.1.0/compose.yaml
-curl -fsSL -o .env https://raw.githubusercontent.com/preburn/preburn/v0.1.0/.env.example
+curl -fsSLO https://raw.githubusercontent.com/preburn/preburn/v0.1.1/compose.yaml
+curl -fsSL -o .env https://raw.githubusercontent.com/preburn/preburn/v0.1.1/.env.example
 ```
 <!-- x-release-please-end -->
 
@@ -61,7 +61,7 @@ curl -fsSL -o .env https://raw.githubusercontent.com/preburn/preburn/v0.1.0/.env
 
 <!-- x-release-please-start-version -->
 ```sh
-sed -i.bak "s|^PREBURN_SECRET_KEY=$|PREBURN_SECRET_KEY=$(docker run --rm ghcr.io/preburn/preburn:0.1.0 secret-key)|" .env
+sed -i.bak "s|^PREBURN_SECRET_KEY=$|PREBURN_SECRET_KEY=$(docker run --rm ghcr.io/preburn/preburn:0.1.1 secret-key)|" .env
 rm .env.bak
 ```
 <!-- x-release-please-end -->
